@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>TaskFlow</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'tasks/style.css' %}">
+</head>
+<body class="app">
+  <header class="app-header">
+    <h1>📋 TaskFlow — {{ user.username }}</h1>
+    <div>
+      <button id="theme-btn" type="button">🌙 Dark mode</button>
+      <form method="post" action="{% url 'logout' %}" style="display:contents">
+        {% csrf_token %}
+        <button type="submit" class="btn">Log out</button>
+      </form>
+    </div>
+  </header>
+
+  <form method="post" id="add-form">
+    {% csrf_token %}
+    <input type="text" name="title" id="task-input" placeholder="Add a task..." required>
+    <select name="priority" id="priority-select">
+      <option value="low">Low</option>
+      <option value="medium" selected>Medium</option>
+      <option value="high">High</option>
+    </select>
+    <input type="date" name="due_date">
+    <button type="submit" class="btn">Add</button>
+  </form>
+
+  <ul id="task-list">
+    {% for task in tasks %}
+      <li data-done="{{ task.done|yesno:'true,false' }}">
+        <form method="post" action="{% url 'toggle_task' task.id %}" style="display:contents">
+          {% csrf_token %}
+          <button type="submit" class="task-check" data-done="{{ task.done|yesno:'true,false' }}">{% if task.done %}✓{% endif %}</button>
+        </form>
+        <span class="task-title">{{ task.title }}{% if task.due_date %} &mdash; due {{ task.due_date }}{% endif %}</span>
+        <span class="badge" data-priority="{{ task.priority }}">{{ task.priority }}</span>
+        <form method="post" action="{% url 'delete_task' task.id %}" style="display:contents">
+          {% csrf_token %}
+          <button type="submit" class="delete-btn">✕</button>
+        </form>
+      </li>
+    {% empty %}
+      <li id="empty-state">No tasks yet — add one above.</li>
+    {% endfor %}
+  </ul>
+</body>
+</html>
