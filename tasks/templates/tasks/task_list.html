@@ -6,16 +6,16 @@
   <link rel="stylesheet" href="{% static 'tasks/style.css' %}">
 </head>
 <body class="app">
-  <header class="app-header">
-    <h1>📋 TaskFlow — {{ user.username }}</h1>
-    <div>
-      <button id="theme-btn" type="button">🌙 Dark mode</button>
-      <form method="post" action="{% url 'logout' %}" style="display:contents">
-        {% csrf_token %}
-        <button type="submit" class="btn">Log out</button>
-      </form>
-    </div>
-  </header>
+ <header class="app-header">
+  <h1>📋 TaskFlow — {{ user.username }}</h1>
+  <div>
+    <button id="theme-btn" type="button">🌙 Dark mode</button>
+    <form method="post" action="{% url 'logout' %}" style="display:contents">
+      {% csrf_token %}
+      <button type="submit" class="btn">Log out</button>
+    </form>
+  </div>
+</header>
 
   <form method="post" id="add-form">
     {% csrf_token %}
@@ -48,4 +48,17 @@
     {% endfor %}
   </ul>
 </body>
+<script>
+  const themeBtn = document.getElementById("theme-btn");
+  function applyTheme(theme) {
+    document.documentElement.dataset.theme = theme;
+    themeBtn.textContent = theme === "dark" ? "☀️ Light mode" : "🌙 Dark mode";
+    localStorage.setItem("taskflow.theme", theme);
+  }
+  themeBtn.addEventListener("click", () => {
+    const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+    applyTheme(next);
+  });
+  applyTheme(localStorage.getItem("taskflow.theme") || "light");
+</script>
 </html>
